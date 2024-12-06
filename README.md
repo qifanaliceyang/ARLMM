@@ -1,6 +1,7 @@
 # Autoregressive Linear Mixed Models 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  
-
+[![Contributors](https://img.shields.io/github/contributors/qifanaliceyang/ARLMM)](https://github.com/qifanaliceyang/ARLMM/graphs/contributors)
+[![Issues](https://img.shields.io/github/issues/qifanaliceyang/ARLMM)](https://github.com/qifanaliceyang/ARLMM/issues)
 
 ## 🚀 Overview
 
