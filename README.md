@@ -19,9 +19,9 @@ Our package will result in an error if used in any Python version prior to 3.6. 
 1. Clone or download the repository:
    ```bash
    git clone https://github.com/qifanaliceyang/ARLMM
-2. Navigate to the data directory and use sample data or upload your data here:
+2. Creat a data directory and upload your data:
    ```bash
-   cd data
+   mkdir -p data
 3. Install dependencies:
    ```bash
    pip install -r requirements.txt
