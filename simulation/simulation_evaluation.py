@@ -15,75 +15,130 @@ from ARLMM import ARLMM_Model
 from simulation import GenomeSimulator, LongitudinalPhenotypeSimulator, CovarianceSimulator
 
 
-class TypeIErrorCalculator:
+
+class LinearModel:
     """
-    A class to calculate Type I error rates for a given statistical model.
+    A class to define and fit a linear model (no grouping variables).
     """
-
-
-class PowerCalculator:
-    def __init__(self, n_individuals, repeat_measures, n_simulations):
+    def __init__(self, formula, data):
         """
-        Initializes the power analysis class for longitudinal data with random effects.
-
-        n_individuals: Number of individuals
-        repeat_measures: List specifying the number of repeated measures for each individual
-        n_simulations: Number of simulations to run for the power analysis
+        Initialize the linear model.
+        :param formula: str, the formula for the linear model (e.g., "y ~ x1 + x2").
+        :param data: DataFrame, the dataset to fit the model.
         """
-        self.n_individuals = n_individuals
-        self.repeat_measures = repeat_measures
+        self.formula = formula
+        self.data = data
+        self.model = None
+        self.result = None
+
+    def fit(self):
+        """
+        Fit the linear model using statsmodels.
+        """
+        self.model = smf.ols(self.formula, self.data)
+        self.result = self.model.fit()
+        return self.result
+
+    def get_p_value(self, variable):
+        """
+        Retrieve the p-value for a specified variable.
+        :param variable: str, the name of the fixed effect variable to check.
+        :return: float, the p-value of the specified variable.
+        """
+        if self.result is None:
+            raise ValueError("Model is not fitted. Call the fit() method first.")
+        return self.result.pvalues[variable]
+
+
+class PowerAndTypeIErrorCalculator:
+    """
+    A class to calculate statistical power and Type I error rate for a linear model.
+    """
+    def __init__(self, lm, effect_var, n_simulations=1000, alpha=0.05):
+        """
+        Initialize the calculator.
+        :param lm: LinearModel, the model for which to calculate power and Type I error rate.
+        :param effect_var: str, the name of the variable whose effect size is being tested.
+        :param n_simulations: int, the number of simulations to run (default: 1000).
+        :param alpha: float, the significance level (default: 0.05).
+        """
+        self.lm = lm
+        self.effect_var = effect_var
         self.n_simulations = n_simulations
+        self.alpha = alpha
 
-    def fit_mixed_model(self, data):
+    def simulate_data(self, true_effect, random_state=None):
         """
-        Fits a linear mixed model to the simulated data.
-
-        param data: DataFrame with columns: 'Individual', 'Time', and 'Phenotype'
-        return: p-value for the fixed slope effect
+        Simulate data with a specified true effect size.
+        :param true_effect: float, the true effect size for the variable.
+        :param random_state: int, random seed for reproducibility.
+        :return: DataFrame, the simulated dataset.
         """
-        result = model.fit() # did we implement model.fit()?
-        p_value = result.pvalues
-        return p_value
+        if random_state:
+            np.random.seed(random_state)
 
-    def perform_power_analysis(self, method):
+        n_obs = len(self.lm.data)
+
+        # Simulate independent variable
+        x = self.lm.data[self.effect_var]
+
+        # Simulate dependent variable
+        y = true_effect * x + np.random.normal(0, 1, n_obs)
+
+        # Return simulated data
+        sim_data = self.lm.data.copy()
+        sim_data['y'] = y
+        return sim_data
+
+    def calculate_power(self, true_effect):
         """
-        Performs power analysis by simulating data multiple times and computing the power (p values):
-
-        return: Estimated power (proportion of simulations where p-value < alpha)
+        Calculate power based on simulations.
+        :param true_effect: float, the true effect size for the variable.
+        :return: float, the estimated power.
         """
-        significant_results = 0
+        significant_count = 0
 
-        for sim in range(self.n_simulations):
-            # Simulate data
-            simulated_data = self.simulate_data()
+        for i in range(self.n_simulations):
+            sim_data = self.simulate_data(true_effect=true_effect, random_state=i)
+            self.lm.data = sim_data
+            result = self.lm.fit()
 
-            # Fit the mixed model and get the p-value for SNP
-            p_value = self.fit_mixed_model(simulated_data)
+            if result.pvalues[self.effect_var] < self.alpha:
+                significant_count += 1
 
-            # Check if the result is statistically significant
-            if p_value < self.alpha:
-                significant_results += 1
-
-        # Compute power (proportion of simulations where p-value < alpha)
-        power = significant_results / self.n_simulations
+        power = significant_count / self.n_simulations
         return power
 
+    def calculate_type_I_error(self):
+        """
+        Calculate the Type I error rate under the null hypothesis (true effect = 0).
+        :return: float, the Type I error rate.
+        """
+        return self.calculate_power(true_effect=0)
 
 
-def main():
-    # Parameters for the simulation
-    n_loci = 1500  # Number of loci (genetic markers)
-    n_simulations = 5  # Number of Simulations
-    n_parameters = 7  # Number of parameters to estimate
-    maf_range = (0.05, 0.4)  # SNP MAF range
-    baseline_mean = 3000  # Mean baseline brain volume (phenotype)
-    baseline_sd = 100  # Standard deviation of the baseline phenotype
-    noise_sd = 50  # Standard deviation of random noise
-    ar1_rho = 0.8  # Autoregressive parameter for AR(1)
-    covar_dynamic_name_list = ['Age', 'Sex', 'ICV']  # Covariates
+# Example Usage
+if __name__ == "__main__":
+    # Create sample data
+    np.random.seed(42)
+    data = pd.DataFrame({
+        "x1": np.random.normal(size=100)
+    })
+    data["y"] = 0.5 * data["x1"] + np.random.normal(size=100)
 
-    # Vary the number of subjects (individuals) to observe the impact on running time
-    subject_numbers = [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]  # Number of subjects to test
+    # Define and fit the linear model
+    lm = LinearModel("y ~ x1", data)
+
+    # Power and Type I error calculations
+    calculator = PowerAndTypeIErrorCalculator(lm, effect_var="x1", n_simulations=100, alpha=0.05)
+
+    # Calculate power for a true effect size of 0.5
+    power = calculator.calculate_power(true_effect=0.5)
+    print(f"Estimated Power: {power}")
+
+    # Calculate Type I error rate (true effect size = 0)
+    type_I_error = calculator.calculate_type_I_error()
+    print(f"Estimated Type I Error Rate: {type_I_error}")
 
 
 if __name__ == "__main__":
