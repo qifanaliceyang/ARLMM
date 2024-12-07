@@ -11,7 +11,7 @@ import statsmodels.formula.api as smf
 import matplotlib.pyplot as plt
 #from utils import mapping_matrix_T, cross_sectional_longit_mapping_function,load_groups_from_file, load_random_effect_info_from_file, project_covariate_func, ARLMM 
 #from utils import predict, evaluate, booostrap_stats, group_kfold_cross_validation, final_calculation 
-from ARLMM_v8 import ARLMM_Model
+from ARLMM import ARLMM_Model
 from Simulation import GenomeSimulator, LongitudinalPhenotypeSimulator, CovarianceSimulator
 
 
