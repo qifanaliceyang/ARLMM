@@ -22,10 +22,51 @@ class TypeIErrorCalculator:
 
 
 class PowerCalculator:
-    """
-    A class to calculate statistical power for a given model and effect size.
-    """
+    def __init__(self, n_individuals, repeat_measures, n_simulations):
+        """
+        Initializes the power analysis class for longitudinal data with random effects.
 
+        n_individuals: Number of individuals
+        repeat_measures: List specifying the number of repeated measures for each individual
+        n_simulations: Number of simulations to run for the power analysis
+        """
+        self.n_individuals = n_individuals
+        self.repeat_measures = repeat_measures
+        self.n_simulations = n_simulations
+
+    def fit_mixed_model(self, data):
+        """
+        Fits a linear mixed model to the simulated data.
+
+        param data: DataFrame with columns: 'Individual', 'Time', and 'Phenotype'
+        return: p-value for the fixed slope effect
+        """
+        result = model.fit() # did we implement model.fit()?
+        p_value = result.pvalues
+        return p_value
+
+    def perform_power_analysis(self, method):
+        """
+        Performs power analysis by simulating data multiple times and computing the power (p values):
+
+        return: Estimated power (proportion of simulations where p-value < alpha)
+        """
+        significant_results = 0
+
+        for sim in range(self.n_simulations):
+            # Simulate data
+            simulated_data = self.simulate_data()
+
+            # Fit the mixed model and get the p-value for SNP
+            p_value = self.fit_mixed_model(simulated_data)
+
+            # Check if the result is statistically significant
+            if p_value < self.alpha:
+                significant_results += 1
+
+        # Compute power (proportion of simulations where p-value < alpha)
+        power = significant_results / self.n_simulations
+        return power
 
 
 
