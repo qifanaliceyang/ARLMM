@@ -25,7 +25,59 @@ Our package will result in an error if used in any Python version prior to 3.6. 
 3. Install dependencies:
    ```bash
    pip install -r requirements.txt
-   
+
+## 🧑‍💻 Code Examples
+How to run the permutation tests:
+   ```bash
+   python permutation_test.py --help
+   ```
+```
+Arguments:
+
+--n_loci: int, default 1500
+		Number of loci (genetic markers).
+  
+--n_simulations: int, default 5
+		Number of simulations to run.
+  
+--n_parameters: int, default 7
+		Number of parameters to estimate.
+  
+--maf_range_low: float, default 0.05
+		Lower bound of the MAF range.
+  
+--maf_range_high: float, default 0.4
+		Upper bound of the MAF range.
+  
+--baseline_mean: float, default 3000
+		Mean baseline phenotype means.
+  
+--baseline_sd: float, default 100
+		Standard deviation of the baseline phenotypes.
+  
+--noise_sd: float, default 50
+		Standard deviation of random noise with respect to baseline phenotypic measurements.
+  
+--ar1_rho: float, default 0.8
+		AR(1) Autoregressive parameter for simulating correlated phenotypes.
+  
+--covars: list of str, default ['Age', 'Sex', 'ICV']
+		Covariate names. Provide multiple values separated by spaces.
+  
+--subject_numbers: list of int, default [100]
+		Number of subjects to run simulations. You can provide multiple values to run multiple simulations.
+```
+Examples:
+1. Run with a larger number of loci and two different subject sizes:
+   ```bash
+   python permutation_test.py --n_loci 10000 --subject_numbers 500 1000
+2. Change the MAF range and run more simulations:
+   ```bash
+   python permutation_test.py --maf_range_low 0.1 --maf_range_high 0.35 --n_simulations 1000
+3. Specify covariates and increase standard deviation of noises:
+   ```bash
+   python permutation_test.py --covars Age Sex ICV --noise_sd 75
+
 
 ## 👥 Authors
 Thanks for the contributions and collaborations from 
