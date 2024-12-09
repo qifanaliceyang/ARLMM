@@ -12,7 +12,7 @@ Autoregressive Linear Mixed Models (ARLMM) is a fast, accurate, sensitivity and 
 - **Scalability**: Running large-scale genetic association experiments for general populations (N >= 10, 000) and handling repeated measurements (t >= 3) efficiently across multiple GPUs. 
 - **Predictability**: Using autoregressive models to improve predictive abilities for unseen subjects' brain imaging measurements, and future brain imaging measurements of observed subjects (in progress).
 - **Robustness**: Incorporating support vector regression to model covariance structures of repeated measurements.
-- **Power**: Achieving higher power for small clinical samples (N < 1, 000) in case-control studies. 
+- **Power**: Achieving higher power for small clinical samples (N < 1, 000) in case-control genetic asscoation studies. 
 
 ## 🛠️ Installation
 Our package will result in an error if used in any Python version prior to 3.6. The following dependencies must be installed: NumPy, pandas, SciPy, scikit-learn, and Matplotlib.
