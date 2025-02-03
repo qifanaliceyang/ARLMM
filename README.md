@@ -84,7 +84,7 @@ Thanks for the contributions and collaborations from
 - **Imaging Genetics Center** - https://github.com/USC-IGC
 - **ENIGMA Consortium** - https://github.com/ENIGMA-git
 
-Please contact **Qifan Yang** (qifan.yang@usc.edu) if you have any comments, suggestions or questions.
+Please contact **Qifan Yang** (Qifan.Yang@bcm.edu) if you have any comments, suggestions or questions.
 
 ## 🌟 Acknowledgements
 This package is developed using the UK Biobank dataset (https://www.ukbiobank.ac.uk) under Application Number 11559, and datasets from Alzheimer's Disease Neuroimaging Initiative (ADNI) (https://adni.loni.usc.edu) with NIH grant R01-AG059874 (PI: Jahanshad).
