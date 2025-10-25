@@ -101,6 +101,7 @@ class PermutationLMMTest:
 
         print(f"P-value from permutation test: {p_value}")
         return p_value
+        
     def visualize_permuted_results(self, permuted_results):
         """Visualize the distribution of permuted estimates and compare to the original."""
         estimates = ['rho_est', 'var_g_est', 'var_t_est', 'var_c_est', 'var_e_est', 'h2_est', 'beta_est']
